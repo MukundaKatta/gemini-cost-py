@@ -301,7 +301,9 @@ def cost(
     # Choose per-million rates based on context tier
     if long_context and p.prompt_per_m_long is not None:
         p_rate = p.prompt_per_m_long
-        c_rate = p.completion_per_m_long if p.completion_per_m_long is not None else p.completion_per_m  # noqa: E501
+        c_rate = (
+            p.completion_per_m_long if p.completion_per_m_long is not None else p.completion_per_m
+        )  # noqa: E501
     else:
         p_rate = p.prompt_per_m
         c_rate = p.completion_per_m

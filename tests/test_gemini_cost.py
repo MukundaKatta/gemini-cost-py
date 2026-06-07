@@ -12,8 +12,8 @@ from gemini_cost import (
     default_pricing,
     known_models,
     normalize_model_id,
+    usage,
 )
-from gemini_cost.core import usage
 
 # ---------------------------------------------------------------------------
 # normalize_model_id
@@ -260,6 +260,26 @@ def test_cost_grounding_zero_requests_no_charge():
     assert usd == pytest.approx(normal)
 
 
+def test_cost_grounding_surcharge_applied():
+    # Custom model with a grounding surcharge of $35 / 1000 requests.
+    # 2000 requests → 2000 * 35 / 1000 = 70.0 surcharge on top of token cost.
+    custom = {
+        "grounded-model": Pricing(
+            prompt_per_m=0.0,
+            completion_per_m=0.0,
+            grounding_per_k_requests=35.0,
+        )
+    }
+    usd = cost(
+        model="grounded-model",
+        prompt_tokens=0,
+        completion_tokens=0,
+        grounding_requests=2000,
+        pricing_table=custom,
+    )
+    assert usd == pytest.approx(70.0)
+
+
 # ---------------------------------------------------------------------------
 # cost — alias resolution
 # ---------------------------------------------------------------------------
@@ -295,6 +315,13 @@ def test_cost_custom_pricing_table():
 # ---------------------------------------------------------------------------
 # usage()
 # ---------------------------------------------------------------------------
+
+
+def test_usage_is_publicly_exported():
+    import gemini_cost
+
+    assert "usage" in gemini_cost.__all__
+    assert gemini_cost.usage is usage
 
 
 def test_usage_returns_usage_namedtuple():
