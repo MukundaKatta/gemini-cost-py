@@ -281,6 +281,7 @@ def cost(
 
     Raises:
         KeyError: If the model is not in the price table.
+        ValueError: If any token or request count is negative.
 
     Example::
 
@@ -288,6 +289,15 @@ def cost(
         >>> round(cost(model="gemini-2.0-flash", prompt_tokens=1000, completion_tokens=200), 8)
         0.00018
     """
+    for name, value in (
+        ("prompt_tokens", prompt_tokens),
+        ("completion_tokens", completion_tokens),
+        ("thinking_tokens", thinking_tokens),
+        ("grounding_requests", grounding_requests),
+    ):
+        if value < 0:
+            raise ValueError(f"{name} must be non-negative, got {value}")
+
     table = pricing_table or DEFAULT_PRICING_TABLE
     canonical = normalize_model_id(model)
     try:
@@ -303,7 +313,7 @@ def cost(
         p_rate = p.prompt_per_m_long
         c_rate = (
             p.completion_per_m_long if p.completion_per_m_long is not None else p.completion_per_m
-        )  # noqa: E501
+        )
     else:
         p_rate = p.prompt_per_m
         c_rate = p.completion_per_m

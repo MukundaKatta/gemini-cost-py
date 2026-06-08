@@ -83,7 +83,7 @@ pip install -e ".[dev]"
 pytest tests/ -v
 ```
 
-43 tests. Covers standard pricing, long-context tiers, thinking tokens, grounding, alias resolution, custom tables, and `Pricing` immutability.
+48 tests. Covers standard pricing, long-context tiers, thinking tokens, grounding, alias resolution, custom tables, input validation, and `Pricing` immutability.
 
 ## License
 

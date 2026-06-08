@@ -297,6 +297,30 @@ def test_cost_unknown_model_raises():
 
 
 # ---------------------------------------------------------------------------
+# cost — input validation
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"prompt_tokens": -1, "completion_tokens": 0},
+        {"prompt_tokens": 0, "completion_tokens": -1},
+        {"prompt_tokens": 0, "completion_tokens": 0, "thinking_tokens": -1},
+        {"prompt_tokens": 0, "completion_tokens": 0, "grounding_requests": -1},
+    ],
+)
+def test_cost_negative_counts_raise(kwargs):
+    with pytest.raises(ValueError, match="must be non-negative"):
+        cost(model="gemini-2.0-flash", **kwargs)
+
+
+def test_usage_negative_counts_raise():
+    with pytest.raises(ValueError, match="must be non-negative"):
+        usage(model="gemini-2.0-flash", prompt_tokens=-5, completion_tokens=0)
+
+
+# ---------------------------------------------------------------------------
 # cost — custom pricing table
 # ---------------------------------------------------------------------------
 
